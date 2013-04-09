@@ -1,10 +1,12 @@
 #include <iostream>
 #include <list>
 #include <iomanip>
+#include <map>
 using namespace std;
 typedef list<char> l;
 class B{
 public:
+    B(){n_.push_front(0);}
     B(l n){n_=n;}
     B(int n){
         if(n>=10){
@@ -17,7 +19,9 @@ public:
     friend ostream& operator<<(ostream&,B&);
     void P();
     l n_;
+    int i_;
 };
+map<int,B> fh;
 ostream& operator<<(ostream& s,B& n){n.P();return s;}
 void B::P(){for(l::iterator it=n_.begin();it!=n_.end();it++){cout<<(int)(*it);}}
 B B::operator+(B& b){
@@ -52,26 +56,29 @@ B B::operator+(B& b){
     }else if(cc!=0){rn.push_front(cc);}
     return B(rn);
 }
-B& B::operator=(const B& b){ n_=b.n_; return *this;}
+B& B::operator=(const B& b){ n_=b.n_;i_=b.i_;return *this;}
 B B::operator*(int n){
     B r(0),o(n_);
     int c=0;
     while(c<n){r=r+o;c++;}
     return r;
 }
-void F(int& n){
-    B f(1);
-    for(int i=2;i<=n;i++){f=f*i;}
-    cout<<f<<endl; }
-void S(int num){
-    long double f = 1;
-    for(int i=2;i<=num;i++){f*=i;}
+void F(int n){
+    if(fh.find(n)!=fh.end()){fh[n].P();}
+    else{
+        B f(1);
+        int i,j=1;
+        if(n>2) for(j=n-1;j>=2;j--){if(fh.find(j)!=fh.end()){f=fh[j];break;}}
+        for(i=j+1;i<=n;i++){f=f*i;}
+        f.i_=n;fh[n]=f;
+        cout<<f<<endl;}}
+void S(int n){
+    long double f=1;
+    for(int i=2;i<=n;i++){f*=i;}
     std::cout<<fixed<<setprecision(0)<<f<<std::endl;
-}
+    B fb=B(f);fb.i_=n;fh[n]=fb;}
 int main(){
     int t,n,i;
     cin>>t;
-    for(i=0;i<t;i++){
-        cin>>n;
-        (n<=25)?S(n):F(n);}
+    for(i=0;i<t;i++){cin>>n;n<=25?S(n):F(n);}
     return 0;}
